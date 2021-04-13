@@ -6,12 +6,12 @@ import 'package:hrm/theme1/DialogPopup.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:reactive_forms_widgets/reactive_forms_widgets.dart';
 
-class PostTask extends StatefulWidget {
+class PostChangePassWord extends StatefulWidget {
   @override
-  _PostTaskState createState() => _PostTaskState();
+  _PostChangePassWord createState() => _PostChangePassWord();
 }
 
-class _PostTaskState extends State<PostTask> {
+class _PostChangePassWord extends State<PostChangePassWord> {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   RestDatasource api = new RestDatasource();
   List<dynamic> _projects = [];

@@ -30,7 +30,7 @@ class _SDExamCompletionBoardScreenState extends State<T1EmployeeLeave>
   @override initState() {
     super.initState();
 
-    tabs = ['Approved', 'History'];
+    tabs = ['Đã nghỉ', 'Lịch sử'];
     _tabController = TabController(length: tabs.length, vsync: this);
     _tabController.addListener(_handleTabControllerTick);
   }
@@ -96,7 +96,7 @@ class _SDExamCompletionBoardScreenState extends State<T1EmployeeLeave>
                           padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                           child: Center(
                             child: Text(
-                              'Leave',
+                              'DS Nghỉ phép',
                               maxLines: 2,
                               style: TextStyle(
                                   fontFamily: fontBold,

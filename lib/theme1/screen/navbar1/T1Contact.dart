@@ -87,7 +87,7 @@ class T1ContactState extends State<T1Contact> {
                                           _contacts[index].employee_name,
                                           textColor: t1TextColorPrimary,
                                           fontFamily: fontBold,
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           maxLine: 1),
                                     ),
                                     IconButton(
@@ -106,7 +106,7 @@ class T1ContactState extends State<T1Contact> {
                                   ],
                                 ),
                                 text(_contacts[index].department,
-                                    fontSize: 16.0,
+                                    fontSize: 14.0,
                                     textColor: t1TextColorPrimary,
                                     fontFamily: fontMedium),
                               ],
@@ -205,7 +205,7 @@ class T1ModelContact {
     return T1ModelContact(
       name: json['name'] ??= null,
       employee_name: json['employee_name'] ??= null,
-      emergency_phone_number: json['emergency_phone_number'] ??= "0918876874",
+      emergency_phone_number: json['emergency_phone_number'] ??= "02437956622",
       department: json['department'] ??= null,
       avarta: json['avarta'] == null
           ? RestDatasource.BASE_URL + "/files/icons8-user.png"

@@ -14,7 +14,9 @@ import 'package:hrm/main/models/user.dart';
 import 'package:hrm/main/utils/AppConstant.dart';
 import 'package:hrm/main/utils/SDColors.dart';
 import 'package:hrm/main/utils/SDStyle.dart';
+import 'package:hrm/theme1/DialogPopup.dart';
 import 'package:hrm/theme1/screen/T1AllHr.dart';
+import 'package:hrm/theme1/screen/attendance/T1Checkin.dart';
 import 'package:hrm/theme1/screen/blog/BlogDetailsScreen.dart';
 import 'package:hrm/theme1/screen/blog/BlogModel.dart';
 import 'package:hrm/theme1/screen/blog/T1Blog.dart';
@@ -56,11 +58,12 @@ class _DashBoardHomeState extends State<DashBoardHome> {
           '/api/resource/Employee%20Checkin', user.sid, dataBody);
       if (res == true) {
         await LoadingDialog.hide(context);
-        _showSnackBar("Checkout thành công, Hệ thống đang ghi điểm danh...");
+        _showSnackBar("Checkout thành công.");
         await Future<void>.delayed(Duration(milliseconds: 2000));
 
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => T1Checkin()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => T1Checkin()));
+
       } else {
         await LoadingDialog.hide(context);
         await Future<void>.delayed(Duration(milliseconds: 500));
@@ -113,7 +116,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                               );
                             },
                             child: Text(
-                              'SEE ALL',
+                              'Xem thêm',
                               style: boldTextStyle(
                                   textColor: sdPrimaryColor, size: 12),
                             ),
@@ -138,7 +141,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Expanded(
-                                  child: text('Hrm',
+                                  child: text('HRM',
                                       textColor: t1TextColorPrimary,
                                       fontSize: textSizeNormal,
                                       fontFamily: fontBold),
@@ -153,7 +156,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                     );
                                   },
                                   child: Text(
-                                    'SEE ALL',
+                                    'Xem thêm',
                                     style: boldTextStyle(
                                         textColor: sdPrimaryColor, size: 12),
                                   ),
@@ -204,7 +207,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                   ),
                                   mediaButton(
-                                      "Leave",
+                                      "Xin nghỉ",
                                       'images/theme1/icons8-leave.png',
                                       "/T1LeaveApplication"),
                                 ],
@@ -223,7 +226,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Expanded(
-                                  child: text('Projects',
+                                  child: text('Planner',
                                       textColor: t1TextColorPrimary,
                                       fontSize: textSizeNormal,
                                       fontFamily: fontBold),
@@ -238,7 +241,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                     );
                                   },
                                   child: Text(
-                                    'SEE ALL',
+                                    'Xem thêm',
                                     style: boldTextStyle(
                                         textColor: sdPrimaryColor, size: 12),
                                   ),
@@ -254,15 +257,15 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   mediaButton(
-                                      "Project",
+                                      "Dự án",
                                       "images/theme1/icons8-project-48.png",
                                       "/T1Project"),
                                   mediaButton(
-                                      "Task",
+                                      "DS Việc",
                                       "images/theme1/icons8-task.png",
                                       "/T1Task"),
                                   mediaButton(
-                                      "Task confirm",
+                                      "Xác nhận việc",
                                       'images/theme1/icons8-ticket_confirmed.png',
                                       "/ComfirmTask"),
                                 ],
@@ -481,32 +484,3 @@ class _SliderState extends State<Slider> {
   }
 }
 
-class LoadingDialog extends StatelessWidget {
-  static void show(BuildContext context, {Key key}) => showDialog<void>(
-        context: context,
-        useRootNavigator: false,
-        barrierDismissible: false,
-        builder: (_) => LoadingDialog(key: key),
-      ).then((_) => FocusScope.of(context).requestFocus(FocusNode()));
-
-  static void hide(BuildContext context) => Navigator.pop(context);
-
-  LoadingDialog({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Center(
-        child: Card(
-          child: Container(
-            width: 80,
-            height: 80,
-            padding: EdgeInsets.all(12.0),
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      ),
-    );
-  }
-}

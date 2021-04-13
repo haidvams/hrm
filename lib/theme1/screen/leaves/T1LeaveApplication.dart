@@ -26,9 +26,10 @@ class AllFieldsFormBloc extends FormBloc<String, String> {
   final halfcheck = BooleanFieldBloc();
 
   final type = SelectFieldBloc(
-    items: ['Privilege Leave'],
+    items: ['Nghỉ theo phép', 'Nghỉ không lương'],
   );
 
+  // Privilege Leave
   final fromdate = InputFieldBloc<DateTime, Object>();
   final todate = InputFieldBloc<DateTime, Object>();
   final halfday = InputFieldBloc<DateTime, Object>();
@@ -56,30 +57,30 @@ class AllFieldsFormBloc extends FormBloc<String, String> {
   }
 
   addErrors() {
-    if (type.value == null){
+    if (type.value == null) {
       type.addFieldError('Please select!');
       return false;
     }
-    if (fromdate.value == null){
+    if (fromdate.value == null) {
       fromdate.addFieldError('Please select!');
       return false;
     }
-    if (todate.value == null){
+    if (todate.value == null) {
       todate.addFieldError('Please select!');
       return false;
     }
-    if (halfcheck.value){
-      if(fromdate.value != todate.value && halfday.value == null){
+    if (halfcheck.value) {
+      if (fromdate.value != todate.value && halfday.value == null) {
         halfday.addFieldError('Please select!');
         return false;
       }
     }
-    if(fromdate.value.millisecondsSinceEpoch > todate.value.millisecondsSinceEpoch ){
+    if (fromdate.value.millisecondsSinceEpoch >
+        todate.value.millisecondsSinceEpoch) {
       fromdate.addFieldError('Please select less than to date!');
       return false;
     }
     return true;
-
   }
 
   Future postLeaveDraft(var dataBody) async {
@@ -94,14 +95,14 @@ class AllFieldsFormBloc extends FormBloc<String, String> {
       "half_day": halfday.value != null ? "1" : "0",
       "status": "Open",
       "posting_date": DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      "leave_type": type.value,
+      "leave_type": type.value == "Nghỉ theo phép" ? "Privilege Leave":"Leave Without Pay",
       "from_date": DateFormat('yyyy-MM-dd').format(fromdate.value),
-      "half_day_date": halfday.value == null ? "" : DateFormat('yyyy-MM-dd')
-          .format(halfday.value),
+      "half_day_date": halfday.value == null
+          ? ""
+          : DateFormat('yyyy-MM-dd').format(halfday.value),
       "to_date": DateFormat('yyyy-MM-dd').format(todate.value),
       "description": reason.value == null ? "" : reason.value
     };
-
 
     try {
       User user = await db.getUser();
@@ -142,10 +143,19 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
       'date': DateFormat('yyyy-MM-dd').format(DateTime.now())
     };
     var data = await api.getleaveAvalible(
-        '/api/method/erpnext.hr.doctype.leave_application.leave_application.get_leave_details',user.sid,
-        type,
+        '/api/method/erpnext.hr.doctype.leave_application.leave_application.get_leave_details',
+        user.sid,
         datapost);
-    return data == null ? data : T1ModelLeaveDetail.fromJson(data);
+    if (data.isNotEmpty && !data.containsKey('error')) {
+      if ((data["message"]["leave_allocation"].isNotEmpty)) {
+        return T1ModelLeaveDetail.fromJson(
+            data["message"]["leave_allocation"]["Privilege Leave"]);
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   Widget counter(String counter, String counterName) {
@@ -182,8 +192,12 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
       onData: (previous, current) async* {
         if (current.value != null) {
           setState(() {
-            _leaveAvali = getDetailLeave(current.value);
-            visibilityType = true;
+            if (current.value == "Nghỉ theo phép") {
+              _leaveAvali = getDetailLeave(current.value);
+              visibilityType = true;
+            }else{
+              visibilityType = false;
+            }
           });
         } else {
           setState(() {
@@ -193,7 +207,6 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +227,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
             ),
             child: Scaffold(
               appBar: AppBar(
-                title: Text('Leave Application'),
+                title: Text('Tạo đơn xin nghỉ phép'),
                 backgroundColor: Color(0xFF3281FF),
                 actions: [
                   IconButton(
@@ -224,7 +237,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                     ),
                     onPressed: () async {
                       var check = await formBloc.addErrors();
-                      if(check){
+                      if (check) {
                         formBloc.submit();
                       }
                     },
@@ -254,62 +267,69 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                     child: Column(
                       children: <Widget>[
                         Visibility(
-                          child: FutureBuilder<T1ModelLeaveDetail>(
-                            future: _leaveAvali,
-                            builder: (context, data) {
-                              if (data.hasData) {
-                                return Column(
-                                  children: <Widget>[
-                                    text(data.data.type,
-                                        textColor: t1TextColorPrimary,
-                                        fontSize: textSizeNormal,
-                                        fontFamily: fontMedium),
-                                    text(
-                                        "Total: " +
-                                            data.data.total_leaves.toString() +
-                                            "Days",
-                                        textColor: t1_colorPrimary,
-                                        fontSize: textSizeMedium,
-                                        fontFamily: fontMedium),
-                                    Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: view(),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        counter(
-                                            data.data.expired_leaves.toString(),
-                                            "expired"),
-                                        counter(
-                                            data.data.leaves_taken.toString(),
-                                            "taken"),
-                                        counter(
-                                            data.data.pending_leaves.toString(),
-                                            "pending"),
-                                        counter(
-                                            data.data.remaining_leaves
-                                                .toString(),
-                                            "remaining"),
-                                      ],
-                                    ),
-                                    SizedBox(height: 16),
-                                  ],
-                                );
-                              } else if (data.hasError) {
-                                return Text("${data.error}");
-                              }
-                              // By default, show a loading spinner.
-                              return CircularProgressIndicator();
-                            },
-                          ),
+                          child: _leaveAvali == null
+                              ? Text(
+                                  "Bạn chưa được Gán ngày nghỉ trong năm nay")
+                              : FutureBuilder<T1ModelLeaveDetail>(
+                                  future: _leaveAvali,
+                                  builder: (context, data) {
+                                    if (data.hasData) {
+                                      return Column(
+                                        children: <Widget>[
+                                          text("Đặc quyền nghỉ",
+                                              textColor: t1TextColorPrimary,
+                                              fontSize: textSizeNormal,
+                                              fontFamily: fontMedium),
+                                          text(
+                                              "Tổng cộng: " +
+                                                  data.data.total_leaves
+                                                      .toString() +
+                                                  "Ngày",
+                                              textColor: t1_colorPrimary,
+                                              fontSize: textSizeMedium,
+                                              fontFamily: fontMedium),
+                                          Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: view(),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: <Widget>[
+                                              counter(
+                                                  data.data.expired_leaves
+                                                      .toString(),
+                                                  "Quá hạn"),
+                                              counter(
+                                                  data.data.leaves_taken
+                                                      .toString(),
+                                                  "Đã dùng"),
+                                              counter(
+                                                  data.data.pending_leaves
+                                                      .toString(),
+                                                  "Chờ duyệt"),
+                                              counter(
+                                                  data.data.remaining_leaves
+                                                      .toString(),
+                                                  "Còn lại"),
+                                            ],
+                                          ),
+                                          SizedBox(height: 16),
+                                        ],
+                                      );
+                                    } else if (data.hasError) {
+                                      return Text("${data.error}");
+                                    }
+                                    // By default, show a loading spinner.
+                                    return CircularProgressIndicator();
+                                  },
+                                ),
                           visible: visibilityType,
                         ),
                         DropdownFieldBlocBuilder<String>(
                           selectFieldBloc: formBloc.type,
                           decoration: InputDecoration(
-                            labelText: 'Leave Type',
+                            labelText: 'Loại nghỉ phép',
                             prefixIcon: Icon(Icons.sentiment_satisfied),
                           ),
                           itemBuilder: (context, value) => value,
@@ -321,7 +341,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                           firstDate: DateTime(1900),
                           lastDate: DateTime(2100),
                           decoration: InputDecoration(
-                            labelText: 'From Date',
+                            labelText: 'Từ ngày',
                             prefixIcon: Icon(Icons.calendar_today),
                             helperText: 'Date',
                           ),
@@ -333,7 +353,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                           firstDate: DateTime(1900),
                           lastDate: DateTime(2100),
                           decoration: InputDecoration(
-                            labelText: 'To Date',
+                            labelText: 'Đến ngày',
                             prefixIcon: Icon(Icons.calendar_today),
                             helperText: 'Date',
                           ),
@@ -342,7 +362,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                           booleanFieldBloc: formBloc.halfcheck,
                           body: Container(
                             alignment: Alignment.centerLeft,
-                            child: Text('Half Day'),
+                            child: Text('Nửa ngày'),
                           ),
                         ),
                         Visibility(
@@ -353,7 +373,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime(2100),
                             decoration: InputDecoration(
-                              labelText: 'Half Day Date',
+                              labelText: 'Ngày nghỉ nửa ngày',
                               prefixIcon: Icon(Icons.calendar_today),
                               helperText: 'Date',
                             ),
@@ -363,7 +383,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
                         TextFieldBlocBuilder(
                           textFieldBloc: formBloc.reason,
                           decoration: InputDecoration(
-                            labelText: 'Reason',
+                            labelText: 'Lý do',
                             prefixIcon: Icon(Icons.text_fields),
                           ),
                         ),
@@ -384,8 +404,7 @@ class _AllFieldsFormState extends State<AllFieldsForm> {
 }
 
 class LoadingDialog extends StatelessWidget {
-  static void show(BuildContext context, {Key key}) =>
-      showDialog<void>(
+  static void show(BuildContext context, {Key key}) => showDialog<void>(
         context: context,
         useRootNavigator: false,
         barrierDismissible: false,
@@ -424,28 +443,25 @@ class SuccessScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.tag_faces, size: 100),
             SizedBox(height: 10),
             Text(
-              'Success',
+              'Xin nghỉ thành công',
               style: TextStyle(fontSize: 54, color: Colors.green),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 10),
             RaisedButton.icon(
-              onPressed: () =>
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => AllFieldsForm())),
-              icon: Icon(Icons.replay),
-              label: Text('AGAIN'),
+              onPressed: () => Navigator.of(context).pushReplacementNamed("/T1Dashboard"),
+              icon: Icon(Icons.home),
+              label: Text('Trang chủ'),
             ),
             SizedBox(height: 10),
             RaisedButton.icon(
               onPressed: () {
                 Navigator.pushNamed(context, "/T1EmployeeLeave");
               },
-              icon: Icon(Icons.replay),
-              label: Text('View Leave'),
+              icon: Icon(Icons.list),
+              label: Text('Xem danh sách nghỉ'),
             ),
           ],
         ),
@@ -482,10 +498,7 @@ dialogContent(BuildContext context) {
           ),
         ],
       ),
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisSize: MainAxisSize.min, // To make the card compact
         children: <Widget>[
@@ -557,16 +570,17 @@ class T1ModelLeaveDetail {
   String type;
   double total_leaves;
   double expired_leaves;
-  int leaves_taken;
+  double leaves_taken;
   double pending_leaves;
   double remaining_leaves;
 
-  T1ModelLeaveDetail({this.total_leaves,
-    this.type,
-    this.expired_leaves,
-    this.leaves_taken,
-    this.pending_leaves,
-    this.remaining_leaves});
+  T1ModelLeaveDetail(
+      {this.total_leaves,
+      this.type,
+      this.expired_leaves,
+      this.leaves_taken,
+      this.pending_leaves,
+      this.remaining_leaves});
 
   factory T1ModelLeaveDetail.fromJson(Map<String, dynamic> json) {
     return T1ModelLeaveDetail(

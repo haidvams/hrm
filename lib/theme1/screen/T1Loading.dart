@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hrm/main/data/auth.dart';
 import 'package:hrm/main/data/database_helper.dart';
@@ -71,12 +73,20 @@ class LoginScreenState extends State<T1Loading>
               .login(user.username, user.password)
               .then((User user_update) async {
             await db.update(user_update, user.id);
-          }).catchError((Object error) => onLoginError(error.toString()));
+            Navigator.of(context).pushReplacementNamed("/T1Dashboard");
+          }).catchError((Object error) {
+            _showSnackBar(error);
+            Future.delayed(const Duration(milliseconds: 5000), () {
+              exit(0);
+            });
+          });
         }
       }).catchError((error) {
-        _showSnackBar("Errors server hrm.ams.net.vn");
+        _showSnackBar("lỗi kết nối server hoặc chưa bật mạng");
+        Future.delayed(const Duration(milliseconds: 5000), () {
+          exit(0);
+        });
       });
-      Navigator.of(context).pushReplacementNamed("/T1Dashboard");
     } else {
       Navigator.of(context).pushReplacementNamed("/T1Login");
     }

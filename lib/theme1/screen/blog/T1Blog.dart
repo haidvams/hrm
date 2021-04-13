@@ -31,7 +31,11 @@ class _SdViewAllblogsScreenState extends State<T1Blog>
   void initState() {
     super.initState();
     getProject();
-    tabs = ['All blog', 'general', 'New Uploaded'];
+    tabs = [
+      'All blog'
+      // 'general',
+      // 'New Uploaded'
+    ];
     _tabController = TabController(length: tabs.length, vsync: this);
     _tabController.addListener(_handleTabControllerTick);
   }

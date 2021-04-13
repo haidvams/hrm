@@ -1,29 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:hrm/main/data/database_helper.dart';
 import 'package:hrm/main/utils/SDColors.dart';
 import 'package:hrm/main/utils/SDStyle.dart';
-import 'package:hrm/theme1/screen/DeveloperModeScreen.dart';
-import 'package:hrm/theme1/screen/employee/T1ProfileEmployee.dart';
 
-import 'T1EmployeeLeave.dart';
-
-class T1ListLeaves extends StatefulWidget {
+class SettingScreen extends StatefulWidget {
   @override
-  _SDSettingScreenState createState() => _SDSettingScreenState();
+  _SettingScreenState createState() => _SettingScreenState();
 }
 
-class _SDSettingScreenState extends State<T1ListLeaves> {
+class _SettingScreenState extends State<SettingScreen> {
+
+  var db = new DatabaseHelper();
+
+  Preferences(){
+
+  }
+  PrivacyandSecurity(){
+
+  }
+  NotificationSettings(){
+
+  }
+  HelpCenter(){
+
+  }
+  Logout() async {
+    await db.deleteUsers();
+    Navigator.of(context).pushReplacementNamed("/T1Login");
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget mOption(var icon, var heading, final widgetCate) {
+    Widget mOption(var icon, var heading, final action) {
       return ListTile(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => widgetCate,
-            ),
-          );
-        },
+        onTap: action,
         leading: Icon(
           icon,
           color: sdIconColor,
@@ -41,6 +51,7 @@ class _SDSettingScreenState extends State<T1ListLeaves> {
         ),
       );
     }
+
 
     Widget mDivider() {
       return Container(
@@ -63,27 +74,25 @@ class _SDSettingScreenState extends State<T1ListLeaves> {
               color: Colors.black,
             ),
           ),
-          title: Text('Nghỉ phép', style: boldTextStyle(size: 20)),
+          title: Text('Settings', style: boldTextStyle(size: 20)),
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           automaticallyImplyLeading: false,
         ),
         body: Column(
           children: <Widget>[
-            mOption(Icons.calendar_today, "Leave Application", T1EmployeeLeave()),
+            // mOption(Icons.language, "Preferences" ,Preferences ),
+            // mDivider(),
+            // mOption(Icons.lock_outline, "Privacy and Security", PrivacyandSecurity),
+            // mDivider(),
+            // mOption(Icons.notifications_none, "Notification Settings", NotificationSettings),
             mDivider(),
-            mOption(Icons.linear_scale, "Leave Type", DeveloperModeScreen()),
+            mOption(Icons.help_outline, "Đổi mật khẩu", HelpCenter),
             mDivider(),
-            mOption(Icons.polymer, "Compensatory Leave Request", DeveloperModeScreen()),
-            mDivider(),
-            mOption(Icons.table_view, "Leave Encashment", DeveloperModeScreen()),
-            mDivider(),
-            mOption(Icons.approval, "Approved Leave", DeveloperModeScreen()),
-            mDivider(),
+            mOption(Icons.launch, "Đăng xuất",Logout),
           ],
         ),
       ),
     );
   }
 }
-

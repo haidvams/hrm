@@ -101,18 +101,18 @@ class _ComfirmTask extends State<ComfirmTask> {
                             ),
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.more_vert,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              print("click");
-                            },
-                          ),
-                        ),
+                        // Align(
+                        //   alignment: Alignment.centerRight,
+                        //   child: IconButton(
+                        //     icon: Icon(
+                        //       Icons.more_vert,
+                        //       color: Colors.white,
+                        //     ),
+                        //     onPressed: () {
+                        //       print("click");
+                        //     },
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -307,8 +307,9 @@ class _ComfirmTask extends State<ComfirmTask> {
                                     var check = await formBloc.addErrors();
                                     if (check) {
                                        await formBloc.submit();
-                                       await getListTasks();
-                                      _showSnackBar("Update success");
+                                       Future.delayed(const Duration(milliseconds: 1500), () {
+                                         getListTasks();
+                                       });
                                     }
                                   },
                                   child: Text('Submit'),
@@ -407,44 +408,6 @@ class _PopupFormBloc extends FormBloc<String, String> {
   }
 }
 
-class SuccessScreen extends StatelessWidget {
-  SuccessScreen({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.tag_faces, size: 100),
-            SizedBox(height: 10),
-            Text(
-              'Success',
-              style: TextStyle(fontSize: 54, color: Colors.green),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 10),
-            RaisedButton.icon(
-              onPressed: () => Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => ComfirmTask())),
-              icon: Icon(Icons.replay),
-              label: Text('AGAIN'),
-            ),
-            SizedBox(height: 10),
-            RaisedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.replay),
-              label: Text('List Checkin'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class ModelUpdateTask {
   String task_weight;

@@ -85,7 +85,7 @@ class _T1LoginState extends State<T1Login> implements LoginScreenContract , Auth
                 SizedBox(height: 30),
                 Image.asset(t1_logo_full, height: 100, width: 100),
                 SizedBox(height: 16),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[formHeading(t1_lbl_sign_in_header)]),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[formHeading("Đăng nhập")]),
                 SizedBox(height: 50),
                 Form(
                   key: formKey,
@@ -99,7 +99,7 @@ class _T1LoginState extends State<T1Login> implements LoginScreenContract , Auth
                             obscureText: false,
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.fromLTRB(24, 18, 24, 18),
-                              hintText: "dbiz@info.vn",
+                              hintText: "Email",
                               filled: true,
                               fillColor: t1_edit_text_background,
                               enabledBorder: OutlineInputBorder(
@@ -133,7 +133,7 @@ class _T1LoginState extends State<T1Login> implements LoginScreenContract , Auth
                             obscureText: true,
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.fromLTRB(24, 18, 24, 18),
-                              hintText: t1_hint_password,
+                              hintText: "Mật khẩu",
                               filled: true,
                               fillColor: t1_edit_text_background,
                               enabledBorder: OutlineInputBorder(
@@ -150,18 +150,18 @@ class _T1LoginState extends State<T1Login> implements LoginScreenContract , Auth
                             onSaved: (val) => _password = val,
                           )),
                       SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                        child: CheckboxListTile(
-                          title: text(t1_lbl_remember, textColor: t1TextColorPrimary),
-                          value: rememberMe,
-                          onChanged: (newValue) {
-                            rememberMe = newValue;
-                            setState(() {});
-                          },
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                      //   child: CheckboxListTile(
+                      //     title: text(t1_lbl_remember, textColor: t1TextColorPrimary),
+                      //     value: rememberMe,
+                      //     onChanged: (newValue) {
+                      //       rememberMe = newValue;
+                      //       setState(() {});
+                      //     },
+                      //     controlAffinity: ListTileControlAffinity.leading,
+                      //   ),
+                      // ),
                       SizedBox(height: 8),
                       Padding(
                           padding: EdgeInsets.fromLTRB(40, 16, 40, 16),
@@ -173,7 +173,7 @@ class _T1LoginState extends State<T1Login> implements LoginScreenContract , Auth
                                 width: double.infinity,
                                 height: 60,
                                 child: MaterialButton(
-                                  child: text(t1_lbl_sign_in,
+                                  child: text("Đăng Nhập",
                                       fontSize: textSizeLargeMedium,
                                       textColor: t1_white,
                                       fontFamily: fontMedium),
@@ -189,22 +189,22 @@ class _T1LoginState extends State<T1Login> implements LoginScreenContract , Auth
                   ),
                 ),
                 SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () { print("Container was tapped"); },
-                      child: text(t1_lbl_forgot_password, textColor: t1_textColorSecondary, fontSize: textSizeLargeMedium),
-                    ),
-                    SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, "/T1Signup");
-                      },
-                      child: text(t1_lbl_sign_up, fontFamily: fontMedium, textColor: t1_blue),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: <Widget>[
+                //     GestureDetector(
+                //       onTap: () { print("Container was tapped"); },
+                //       child: text(t1_lbl_forgot_password, textColor: t1_textColorSecondary, fontSize: textSizeLargeMedium),
+                //     ),
+                //     SizedBox(width: 8),
+                //     GestureDetector(
+                //       onTap: () {
+                //         Navigator.pushNamed(context, "/T1Signup");
+                //       },
+                //       child: text(t1_lbl_sign_up, fontFamily: fontMedium, textColor: t1_blue),
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           ),

@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite: any
+  intl: any
   path_provider: ^1.6.24
   cached_network_image: ^2.3.1
   flutter_svg: 0.18.1
@@ -46,6 +47,8 @@ dependencies:
   flutter_countdown_timer: ^3.0.1
   device_info: ^1.0.0
   beacons_plugin: ^1.0.20
+  reactive_forms: any
+  reactive_forms_widgets: ^0.3.1
   flutter_launcher_icons: 0.8.1
 
 
@@ -62,9 +65,9 @@ dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icon/icons8-client_management.png"
+  image_path: "assets/icon/icon.png"
 #  flutter pub get
-#  /Users/haidv/developer/flutter/bin/flutter pub run flutter_launcher_icons:main
+#  /Users/haidv/dev/flutter/bin/flutter pub run flutter_launcher_icons:main
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -158,7 +161,7 @@ flutter:
 
     - family: Regular
       fonts:
-        - asset: fonts/googlesansregular.ttf
+        - asset: fonts/robotoregular.ttf
 
     - family: Medium
       fonts:
@@ -169,6 +172,5 @@ flutter:
         - asset: fonts/googlesansmedium.ttf
 
     - family: Bold
-
       fonts:
-        - asset: fonts/googlesansebold.ttf
+        - asset: fonts/robotobold.ttf

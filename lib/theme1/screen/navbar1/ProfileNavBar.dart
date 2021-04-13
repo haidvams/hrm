@@ -10,6 +10,7 @@ import 'package:hrm/main/utils/SDStyle.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:hrm/smartDeck/Screens/SDSettingScreen.dart';
 import 'package:hrm/theme1/screen/employee/T1EditProfileEmployee.dart';
+import 'package:hrm/theme1/screen/profile/SettingScreen.dart';
 
 
 class ProfileNavBar extends StatefulWidget {
@@ -88,7 +89,7 @@ class _sdPRofileScreenState extends State<ProfileNavBar> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SDSettingScreen(),
+                                  builder: (context) => SettingScreen(),
                                 ),
                               );
                             },

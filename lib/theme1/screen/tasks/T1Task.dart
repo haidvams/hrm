@@ -3,17 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:hrm/main/data/database_helper.dart';
 import 'package:hrm/main/data/rest_data.dart';
 import 'package:hrm/main/models/user.dart';
-import 'package:hrm/main/utils/percent_indicator/circular_percent_indicator.dart';
-import 'package:hrm/smartDeck/ModelClass/LessonsModelClass.dart';
 import 'package:hrm/main/utils/SDColors.dart';
 import 'package:hrm/main/utils/SDStyle.dart';
-import 'package:hrm/smartDeck/Screens/SDLessonsChapterDetailsScreen.dart';
-import 'package:hrm/theme1/screen/projects/T1ProjectDetail.dart';
-import 'package:hrm/theme1/screen/T1TaskDetail.dart';
 import 'package:hrm/theme1/screen/tasks/PostTask.dart';
 import 'package:hrm/theme1/screen/tasks/TaskModel.dart';
 import 'package:hrm/theme1/utils/T1Constant.dart';
-import 'package:hrm/theme1/utils/T1Widget.dart';
 
 class T1Task extends StatefulWidget {
   @override
@@ -29,6 +23,7 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
   String status = "Open";
   RestDatasource api = new RestDatasource();
   var db = new DatabaseHelper();
+  List users = [];
 
   List<TaskModel> tasks = [];
 
@@ -46,11 +41,23 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
     });
   }
 
+  static ChangeColors(String Complexity) {
+    switch (Complexity) {
+      case "Low":
+        return Colors.green;
+        break;
+      case "Medium":
+        return Colors.yellow;
+      case "High":
+        return Colors.red;
+    }
+  }
+
   @override
   initState() {
     super.initState();
     getProjectDetail();
-    tabs = ['Open', 'Working', 'Completed'];
+    tabs = ['Open', 'Working', 'Completed','Overdue'];
     _tabController = TabController(length: tabs.length, vsync: this);
     _tabController.addListener(_handleTabControllerTick);
   }
@@ -63,6 +70,8 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
         status = "Working";
       } else if (_tabController.index == 2) {
         status = "Completed";
+      } else if (_tabController.index == 3) {
+        status = "Overdue";
       }
       getProjectDetail();
       _currentIndex = _tabController.index;
@@ -105,7 +114,7 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
                           padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                           child: Center(
                             child: Text(
-                              'My Tasks',
+                              'Việc của tôi',
                               maxLines: 2,
                               style: TextStyle(
                                   fontFamily: fontBold,
@@ -118,7 +127,7 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(
-                              Icons.more_vert,
+                              Icons.add,
                               color: Colors.white,
                             ),
                             onPressed: () {
@@ -178,97 +187,92 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (BuildContext context, int index) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => T1TaskDetail(
-                                          name: tasks[index].name,
-                                          subject: tasks[index].subject,
-                                          owner: tasks[index].owner,
-                                          status: tasks[index].status,
-                                          project: tasks[index].project,
-                                          priority: tasks[index].priority,
-                                          task_weight: tasks[index]
-                                              .task_weight
-                                              .toString(),
-                                          project_bucket:
-                                              tasks[index].project_bucket,
-                                          score_volum: tasks[index].score_volum,
-                                          score_process:
-                                              tasks[index].score_process,
-                                          score_range: tasks[index].score_range,
-                                          score_complexity:
-                                              tasks[index].score_complexity,
-                                          score_quality:
-                                              tasks[index].score_quality,
-                                          range: tasks[index].score_quality,
-                                        ),
-                                      ));
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 10, bottom: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            tasks[index].subject,
-                                            style: boldTextStyle(size: 16),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                top: 8, bottom: 5),
-                                            child: Text(
-                                              "Assign by: " +
-                                                  tasks[index].owner,
-                                              style:
-                                                  secondaryTextStyle(size: 12),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      FlatButton(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(18.0),
-                                            side: BorderSide(
-                                                color: tasks[index].color)),
-                                        color: Colors.white,
-                                        textColor: tasks[index].color,
-                                        padding: EdgeInsets.all(8.0),
-                                        onPressed: () {},
-                                        child: Text(
-                                          tasks[index].status.toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize: 14.0,
-                                          ),
-                                        ),
-                                      ),
-                                      CircleAvatar(
-                                        radius: 15,
-                                        backgroundColor: sdSecondaryColorGreen
-                                            .withOpacity(0.7),
-                                        child: Text(
-                                          tasks[index].progress,
-                                          style: boldTextStyle(
-                                              textColor: CupertinoColors.white,
-                                              size: 16),
-                                        ),
-                                      ),
-                                    ],
+                              return Container(
+                                  margin: EdgeInsets.only(
+                                      left: 10, right: 10, top: 0, bottom: 10),
+                                  width: double.infinity,
+                                  decoration: boxDecorations(
+                                    showShadow: true,
                                   ),
-                                ),
-                              );
+                                  child: ExpansionTile(
+                                    title: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          tasks[index].subject,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          "Deadline:" + tasks[index].exp_end_date,
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                    leading: Container(
+                                      width: 30,
+                                      height: 30,
+                                      padding: const EdgeInsets.all(5.0),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color:
+                                            ChangeColors(tasks[index].complexity),
+                                            //                   <--- border color
+                                            width: 1.0),
+                                      ),
+                                      //       <--- BoxDecoration here
+                                      child: Center(
+                                        child: Text(
+                                          tasks[index].complexity.substring(0, 1),
+                                          style: TextStyle(
+                                              fontSize: 14.0,
+                                              color: ChangeColors(
+                                                  tasks[index].complexity)),
+                                        ),
+                                      ),
+                                    ),
+                                    // trailing: RaisedButton(
+                                    //   child: Text(tasks[index].task_weight == 0
+                                    //       ? 'CONFIRM'
+                                    //       : "CONFIRMED"),
+                                    //   color: Color(tasks[index].task_weight == 0
+                                    //       ? 0xFF0A79DF
+                                    //       : 0xFF8c8c8c),
+                                    //   textColor: Colors.white,
+                                    //   onPressed: () {
+                                    //    print("da click");
+                                    //   },
+                                    // ),
+                                    children: <Widget>[
+                                      _buildAdvRow(context, 'Report to',
+                                          tasks[index].report_to ?? "N/A"),
+                                      _buildAdvRow(context, 'Thời lượng(H)',
+                                          tasks[index].task_weight.toString() ?? "N/A"),
+                                      _buildAdvRow(context, 'Phạm vi',
+                                          tasks[index].range == 1 ? "Trong" : "Ngoài"),
+                                      // _buildAdvRow(
+                                      //     context,
+                                      //     'Project',
+                                      //     tasks[index].project == ""
+                                      //         ? "N/A"
+                                      //         : tasks[index].project),
+                                      _buildAdvRow(
+                                          context,
+                                          'Dự án',
+                                          tasks[index].project_bucket == ""
+                                              ? "N/A"
+                                              : tasks[index].project_bucket),
+                                      _buildAdvRow(
+                                          context,
+                                          'Trạng thái',
+                                          tasks[index].status == ""
+                                              ? "N/A"
+                                              : tasks[index].status),
+                                    ],
+                                  ));
+
                             },
                           )
                         ],
@@ -283,5 +287,32 @@ class _SDExamCompletionBoardScreenState extends State<T1Task>
       ),
     );
   }
+
+
+  Widget _buildAdvRow(BuildContext context, String title, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(title, style: Theme.of(context).textTheme.caption),
+          SizedBox(
+            width: 12.0,
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: Theme.of(context)
+                  .textTheme
+                  .caption
+                  .apply(color: Colors.black),
+              softWrap: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 

@@ -36,8 +36,9 @@ class RestDatasource {
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
         throw new Exception("Error while fetching data : $statusCode");
-      }else if(statusCode ==302){
-        throw new Exception("Please connect Internet or check  : ${response.headers['location']}");
+      } else if (statusCode == 302) {
+        throw new Exception(
+            "Please connect Internet or check  : ${response.headers['location']}");
       }
       var sid = ((header['set-cookie']).split(";"))[0];
       Map infoUser = {
@@ -49,7 +50,8 @@ class RestDatasource {
     });
   }
 
-  Future<dynamic> getleaveAvalible(String endpoint, String sid, String type, var data) {
+  Future<dynamic> getleaveAvalible(
+      String endpoint, String sid, var data) {
     return http
         .post(BASE_URL + endpoint,
             headers: <String, String>{
@@ -59,18 +61,15 @@ class RestDatasource {
         .then((http.Response response) {
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        return false;
+        return {'error': statusCode};
       }
       try {
-        var res =
-            (json.decode(response.body)["message"]["leave_allocation"][type]);
-        res["type"] = type;
-        return res;
+        return json.decode(response.body);
       } catch (e) {
-        return null;
+        return {'error': e};
       }
     }).catchError((error) {
-      throw Exception(error);
+      return {'error': error};
     });
   }
 
@@ -94,6 +93,28 @@ class RestDatasource {
       }
     }).catchError((error) {
       throw Exception(error);
+    });
+  }
+
+  Future<dynamic> postFormDataPublic(String endpoint, var data) {
+    return http
+        .post(BASE_URL + endpoint,
+            headers: <String, String>{
+              'Authorization': Authorization,
+            },
+            body: jsonEncode(data))
+        .then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if (statusCode < 200 || statusCode > 400 || json == null) {
+        return {'error': statusCode.toString()};
+      }
+      try {
+        return (json.decode(response.body));
+      } catch (e) {
+        return {'error': e};
+      }
+    }).catchError((error) {
+      return {'error': error};
     });
   }
 
@@ -139,7 +160,7 @@ class RestDatasource {
     });
   }
 
-  Future<dynamic> updatePublicDetail(String endpoint,  var data) {
+  Future<dynamic> updatePublicDetail(String endpoint, var data) {
     print(data);
     return http
         .put(BASE_URL + endpoint,
@@ -160,8 +181,6 @@ class RestDatasource {
     });
   }
 
-
-
   //PROFILE_URL
   Future<dynamic> getData(String sid, String endpoint) {
     return http.get(BASE_URL + endpoint, headers: <String, String>{
@@ -177,6 +196,25 @@ class RestDatasource {
       return res;
     }).catchError((error) {
       throw Exception(error);
+    });
+  }
+  //getdatabysid
+  Future<dynamic> getDataBySid(String endpoint) async {
+    var db = new DatabaseHelper();
+    User user = await db.getUser();
+    return http.get(BASE_URL + endpoint, headers: <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Cookie': user.sid.trim(),
+    }).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      if (statusCode < 200 || statusCode > 400 || json == null) {
+        return {"error", statusCode};
+      }
+      return jsonDecode(res);
+    }).catchError((error) {
+      return {"error", error};
     });
   }
 
@@ -212,7 +250,6 @@ class RestDatasource {
       throw Exception(error);
     });
   }
-
 
   //PROFILE_URL
   Future<dynamic> getDataPrivate(String endpoint, String sid) {

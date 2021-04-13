@@ -28,7 +28,6 @@ class _PopupFormState extends State<PopupForm> {
     var data = await api.getleaveAvalible(
         '/api/method/erpnext.hr.doctype.leave_application.leave_application.get_leave_details',
         user.sid,
-        type,
         datapost);
     return data == null ? data : T1ModelLeaveDetail.fromJson(data);
   }

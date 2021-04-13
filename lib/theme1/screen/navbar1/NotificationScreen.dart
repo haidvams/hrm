@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hrm/main/data/database_helper.dart';
+import 'package:hrm/main/data/rest_data.dart';
 import 'package:hrm/smartDeck/ModelClass/SDNotidicationModel.dart';
 import 'package:hrm/main/utils/SDColors.dart';
 import 'package:hrm/main/utils/SDStyle.dart';
@@ -10,64 +13,29 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  List<SDNotidicationModel> notification = [
-    SDNotidicationModel(
-      images: 'https://content.presspage.com/uploads/1369/nehacrop2.jpg?10000',
-      notificationmessage: 'Sabeela sends a new message',
-      time: '2 min ago',
-      dot: true,
-    ),
-    SDNotidicationModel(
-      images: 'images/smartDeck/images/sdsuccess.png',
-      notificationmessage: 'Buy ₹50 Credit success',
-      time: '2 min ago',
-      dot: true,
-    ),
-    SDNotidicationModel(
-      images: 'images/smartDeck/images/sdupdate.png',
-      notificationmessage: 'New Update Version 2.0',
-      time: '2 min ago',
-      dot: true,
-    ),
-    SDNotidicationModel(
-      images: 'images/smartDeck/images/sdsuccess.png',
-      notificationmessage: 'Upgrade plan success',
-      time: '1 hour ago',
-      dot: false,
-    ),
-    SDNotidicationModel(
-      images:
-          'https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70',
-      notificationmessage: 'Sita sends a new message',
-      time: '1 hour ago',
-      dot: false,
-    ),
-    SDNotidicationModel(
-      images:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTMio5UHQKuvdPkvHD4wLt8lJbf6f4JQCUUQA&usqp=CAU',
-      notificationmessage: 'Andy sends a new message',
-      time: '2 hour ago',
-      dot: false,
-    ),
-    SDNotidicationModel(
-      images: 'images/smartDeck/images/sdwarning.png',
-      notificationmessage: 'You pro account is expiring soon',
-      time: '2 days ago',
-      dot: false,
-    ),
-    SDNotidicationModel(
-      images: 'images/smartDeck/images/sdsuccess.png',
-      notificationmessage: 'Buy ₹100 Credit success',
-      time: '2 days ago',
-      dot: false,
-    ),
-    SDNotidicationModel(
-      images: 'images/smartDeck/images/sdbell.png',
-      notificationmessage: 'Exam Geography today at 2:00 PM',
-      time: '3 days ago',
-      dot: false,
-    )
-  ];
+  List _notifis = [];
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  RestDatasource api = new RestDatasource();
+
+  getNotifis() async {
+    var notifis = await api.getDataBySid(
+        '/api/method/frappe.model.db_query.get_list?fields=["name","subject","subject","for_user","type","email_content","document_type","document_name","from_user","creation","read"]&limit=20&order_by=creation desc&doctype=Notification Log');
+    if(notifis.isNotEmpty && !notifis.containsKey('error')){
+      setState(() {
+        _notifis = notifis["message"];
+      });
+    }else{
+      print("cos loi roi");
+    }
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getNotifis();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,42 +89,42 @@ class _NotificationScreenState extends State<NotificationScreen> {
           //     color: Colors.black,
           //   ),
           // ),
-          title: Text('Notification', style: boldTextStyle(size: 20)),
+          title: Text('Thông báo', style: boldTextStyle(size: 20)),
           actions: <Widget>[mPopup()],
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           automaticallyImplyLeading: false,
         ),
         body: ListView.builder(
-            itemCount: notification == null ? 0 : notification.length,
+            itemCount: _notifis == null ? 0 : _notifis.length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
               return Container(
                 margin: EdgeInsets.only(left: 4),
                 child: ListTile(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                      ),
-                      height: 40,
-                      width: 40,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: FadeInImage(
-                          fit: BoxFit.cover,
-                          placeholder: Image.asset(notification[index].images,
-                                  height: 35, width: 10)
-                              .image,
-                          image: Image.network(
-                            notification[index].images,
-                            height: 35,
-                            width: 10,
-                          ).image,
-                        ),
-                      ),
-                    ),
+                    // leading: Container(
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //   ),
+                    //   height: 40,
+                    //   width: 40,
+                    //   child: ClipRRect(
+                    //     borderRadius: BorderRadius.circular(40),
+                    //     child: FadeInImage(
+                    //       fit: BoxFit.cover,
+                    //       placeholder: Image.asset(_notifis[index]["type"],
+                    //               height: 35, width: 10)
+                    //           .image,
+                    //       // image: Image.network(
+                    //       //   notification[index].images,
+                    //       //   height: 35,
+                    //       //   width: 10,
+                    //       // ).image,
+                    //     ),
+                    //   ),
+                    // ),
                     title: Text(
-                      notification[index].notificationmessage,
+                      _notifis[index]["subject"],
                       style: boldTextStyle(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -164,14 +132,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     subtitle: Container(
                       margin: EdgeInsets.only(top: 4),
                       child: Text(
-                        notification[index].time,
+                        _notifis[index]["creation"],
                         style: secondaryTextStyle(),
                       ),
                     ),
                     trailing: Container(
                       padding: EdgeInsets.only(right: 4),
                       child: CircleAvatar(
-                        radius: notification[index].dot == true ? 4 : 0,
+                        radius: _notifis[index]["read"] == 0 ? 4 : 0,
                         backgroundColor: Colors.red,
                       ),
                     )),
@@ -180,4 +148,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
     );
   }
+}
+
+class ModelNotificaton {
+  String name;
+  String subject;
+  String for_user;
+  String type;
+  String email_content;
+  String document_type;
+  String document_name;
+  String from_user;
+  String creation;
+  int read;
+
+  ModelNotificaton(
+      {this.name,
+      this.subject,
+      this.for_user,
+      this.type,
+      this.email_content,
+      this.document_name,
+      this.document_type,
+      this.read,
+      this.creation,
+      from_user});
 }

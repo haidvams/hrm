@@ -80,6 +80,8 @@ class LoginScreenState extends State<T1Loading>
               exit(0);
             });
           });
+        } else {
+          Navigator.of(context).pushReplacementNamed("/T1Dashboard");
         }
       }).catchError((error) {
         _showSnackBar("lỗi kết nối server hoặc chưa bật mạng");

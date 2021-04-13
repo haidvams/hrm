@@ -9,6 +9,7 @@ import 'package:hrm/theme1/screen/T1Loading.dart';
 import 'package:hrm/theme1/screen/T1Login.dart';
 import 'package:hrm/theme1/T1Profile.dart';
 import 'package:hrm/theme1/screen/T1Signup.dart';
+import 'package:hrm/theme1/screen/leaves/T1LeaveApplicationReact.dart';
 import 'package:hrm/theme1/screen/projects/T1Project.dart';
 import 'package:hrm/theme1/screen/tasks/ComfirmTask.dart';
 import 'package:hrm/theme1/screen/tasks/T1Task.dart';
@@ -24,6 +25,7 @@ final routes = {
   '/T1Project' : (BuildContext context)=>T1Project(),
   '/T1Task' : (BuildContext context)=>T1Task(),
   '/T1EmployeeLeave' : (BuildContext context)=>T1EmployeeLeave(),
+  // '/T1LeaveApplication' : (BuildContext context)=>T1LeaveApplicationReact(),
   '/T1LeaveApplication' : (BuildContext context)=>T1LeaveApplication(),
   '/T1Listing' : (BuildContext context)=>T1Listing(),
   '/T1ListCategories' : (BuildContext context)=>T1ListCategories(),
